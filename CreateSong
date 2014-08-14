@@ -1,0 +1,433 @@
+package com.the4960development.patrum;
+
+import java.util.LinkedList;
+import java.util.Random;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class CreateSong extends Activity implements OnClickListener
+{
+	TextView time_sig1;
+	TextView time_sig2;
+	Button play;
+	Button save;
+	Button add;
+	Button sub;
+	EditText title;
+	HorizontalScrollView scroll_view;
+	TableLayout tablelayout;
+	TableRow rows[];
+	NumberPicker tempo;
+
+	MediaPlayer a,b,bb,c,cs,d,e,eb,f,fs,g,gs;
+
+	Random r = new Random();
+	int colors[] = {Color.RED,Color.GREEN,Color.MAGENTA,Color.BLUE,}; 
+
+	Drawable eigth, quater, half, whole, blank;
+	Drawable note_lenghts[] = {eigth, quater, half, whole, blank};
+	Note notes[][];
+	int time_sig[] = {4,4};
+	int beats = 0;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.create_song);
+		time_sig1 = (TextView)findViewById(R.id.time_sig1);
+		time_sig2 = (TextView)findViewById(R.id.time_sig2);
+		play = (Button)findViewById(R.id.btn_play); play.setOnClickListener(this);
+		save = (Button)findViewById(R.id.btn_save); save.setOnClickListener(this);
+		add = (Button)findViewById(R.id.btn_add_four); add.setOnClickListener(this);
+		sub = (Button)findViewById(R.id.btn_sub_four); sub.setOnClickListener(this);
+		title = (EditText)findViewById(R.id.txt_title);
+		scroll_view = (HorizontalScrollView)findViewById(R.id.scrollView1);
+		tablelayout = (TableLayout)findViewById(R.id.table1);
+		rows = new TableRow[tablelayout.getChildCount()];
+		for(int i =0; i < rows.length; i++)
+			rows[i] = (TableRow)tablelayout.getChildAt(i);
+		tempo = (NumberPicker)findViewById(R.id.np_tempo);
+		tempo.setMinValue(60);
+		tempo.setMaxValue(320);
+		tempo.setValue(120);
+		tempo.setWrapSelectorWheel(false);
+		add_colum(time_sig[1]);
+		add_colum(time_sig[1]);
+
+		ImageView dummy = new ImageView(this);
+		dummy.setLayoutParams(new LayoutParams(50, 50));
+		dummy.setImageResource(R.drawable.eigth);
+		eigth = dummy.getDrawable();
+		dummy.setImageResource(R.drawable.quater);
+		quater = dummy.getDrawable();
+		dummy.setImageResource(R.drawable.half);
+		half = dummy.getDrawable();
+		dummy.setImageResource(R.drawable.whole);
+		whole = dummy.getDrawable();
+		dummy.setImageResource(R.drawable.blank);
+		blank = dummy.getDrawable();
+		dummy=null;
+
+		for(TableRow i : rows)
+		{
+			LinearLayout row = (LinearLayout)i.getChildAt(0);
+			row.getChildAt(0).setBackgroundColor(Color.BLACK);
+		}
+
+
+		a = MediaPlayer.create(this, R.raw.a);
+		a.setLooping(false);
+		b = MediaPlayer.create(this, R.raw.b);
+		b.setLooping(false);
+		bb = MediaPlayer.create(this, R.raw.bb);
+		bb.setLooping(false);
+		c = MediaPlayer.create(this, R.raw.c);
+		c.setLooping(false);
+		cs = MediaPlayer.create(this, R.raw.cs);
+		cs.setLooping(false);
+		d = MediaPlayer.create(this, R.raw.d);
+		d.setLooping(false);
+		e = MediaPlayer.create(this, R.raw.e);
+		e.setLooping(false);
+		eb = MediaPlayer.create(this, R.raw.eb);
+		eb.setLooping(false);
+		f = MediaPlayer.create(this, R.raw.f);
+		f.setLooping(false);
+		fs = MediaPlayer.create(this, R.raw.fs);
+		fs.setLooping(false);
+		g = MediaPlayer.create(this, R.raw.g);
+		g.setLooping(false);
+		gs = MediaPlayer.create(this, R.raw.gs);
+		gs.setLooping(false);
+
+	}
+
+	@Override
+	public void onClick(final View v)
+	{
+		switch (v.getId())
+		{
+		case R.id.btn_play:
+			calculateNotes();
+			scroll_view.setScrollX(0);
+			LinearLayout first = (LinearLayout)rows[0].getChildAt(0);
+			tempo.clearFocus();
+			final long delay = 60000/tempo.getValue();
+			final int scroll_interaval = (int) ((beats*delay)/scroll_view.getMaxScrollAmount());
+			Log.d("TAG", "beats = "+beats+", delay = "+delay+", beats*delay = "+(beats*delay));
+			new CountDownTimer(beats*delay, delay)
+			{
+				public void onTick(long beat)
+				{
+					//			         mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+					//			    	 if(millisUntilFinished%delay==0)
+					//			    	 {
+					//			    		 
+					//			    	 }
+					for(int i=0; i<notes.length; i++)
+						for(int j=0; j<notes[i].length; j++)
+							if(notes[i][j]!=null)
+								switch(notes[i][j].letter)
+								{
+								case Note.a:
+									Log.d("TAG", "a, "+notes[i][j].letter);
+									a.start();
+									break;
+								case Note.b:
+									Log.d("TAG", "b");
+									b.start();
+									break;
+								case Note.c:
+									Log.d("TAG", "c");
+									c.start();
+									break;
+								case Note.d:
+									Log.d("TAG", "d");
+									d.start();
+									break;
+								case Note.e:
+									Log.d("TAG", "e");
+									e.start();
+									break;
+								case Note.f:
+									Log.d("TAG", "f");
+									f.start();
+									break;
+								case Note.g:
+									Log.d("TAG", "g");
+									g.start();
+									break;
+								}
+					scroll_view.setScrollX(scroll_interaval);
+				}
+
+				public void onFinish()
+				{
+					Toast.makeText(getApplicationContext(), "Nice song!", Toast.LENGTH_SHORT).show();
+				}
+			}.start();
+			break;
+		case R.id.btn_save:
+			tempo.clearFocus();
+			if(title.getText()==null)
+			{
+				Toast.makeText(this, "Please enter a title", Toast.LENGTH_SHORT).show();
+				break;
+			}
+			calculateNotes();
+			//get database number for the id
+			int id = 0;
+			Song song = new Song(id, title.getText().toString(), time_sig, notes, tempo.getValue());
+			//TODO add song to data base
+			break;
+		case R.id.btn_add_four:
+			add_colum(time_sig[1]);
+			break;
+		case R.id.btn_sub_four:
+			sub_colum(time_sig[1]);
+		default:
+			//TODO handle when a note spot is clicked	// custom dialog
+			Toast.makeText(this, "view: "+v.getId(), Toast.LENGTH_SHORT).show();
+			final Dialog dialog = new Dialog(this);
+			dialog.setContentView(R.layout.create_note);
+			dialog.setTitle("Add A Note...");
+
+			final LinkedList<String> type = new LinkedList<String>();
+			final ImageButton flat = (ImageButton) dialog.findViewById(R.id.btn_flat);
+			final ImageButton sharp = (ImageButton) dialog.findViewById(R.id.btn_sharp);
+			final Button natural = (Button) dialog.findViewById(R.id.btn_natural);
+			OnClickListener type_listener = new OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					if(v.equals(flat))
+						type.add("flat");
+					else if(v.equals(sharp))
+						type.add("sharp");
+					else if(v.equals(natural))
+						type.add("natural");
+				}
+			};
+			flat.setOnClickListener(type_listener);
+			sharp.setOnClickListener(type_listener);
+			natural.setOnClickListener(type_listener);
+
+			final LinkedList<Integer> note_l = new LinkedList<Integer>();
+			// set the custom dialog components - text, image and button
+			final ImageButton en = (ImageButton) dialog.findViewById(R.id.btn_add_eigth);
+			final ImageButton qn = (ImageButton) dialog.findViewById(R.id.btn_add_quater);
+			final ImageButton hn = (ImageButton) dialog.findViewById(R.id.btn_add_half);
+			final ImageButton wn = (ImageButton) dialog.findViewById(R.id.btn_add_whole);
+			final ImageButton er = (ImageButton) dialog.findViewById(R.id.btn_add_eigth_rest);
+			final ImageButton qr = (ImageButton) dialog.findViewById(R.id.btn_add_quater_rest);
+			final ImageButton hr = (ImageButton) dialog.findViewById(R.id.btn_add_half_rest);
+			final ImageButton wr = (ImageButton) dialog.findViewById(R.id.btn_add_whole_rest);
+			OnClickListener length_listener = new OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					switch(view.getId())
+					{
+					case R.id.btn_add_eigth:
+						((ImageView)v).setImageResource(R.drawable.eigth);
+						break;
+					case R.id.btn_add_quater:
+						((ImageView)v).setImageResource(R.drawable.quater);
+						break;
+					case R.id.btn_add_half:
+						((ImageView)v).setImageResource(R.drawable.half);
+						break;
+					case R.id.btn_add_whole:
+						((ImageView)v).setImageResource(R.drawable.whole);
+						break;
+					case R.id.btn_add_eigth_rest:
+						((ImageView)v).setImageResource(R.drawable.eigthrest);
+						break;
+					case R.id.btn_add_quater_rest:
+						((ImageView)v).setImageResource(R.drawable.quaterrest);
+						break;
+					case R.id.btn_add_half_rest:
+						((ImageView)v).setImageResource(R.drawable.halfrest);
+						break;
+					case R.id.btn_add_whole_rest:
+						((ImageView)v).setImageResource(R.drawable.wholerest);
+						break;
+					}
+					if(v.equals(en))
+						note_l.add(R.drawable.eigth);
+					else if(v.equals(qn))
+						note_l.add(R.drawable.quater);
+					else if(v.equals(hn))
+						note_l.add(R.drawable.half);
+					else if(v.equals(wn))
+						note_l.add(R.drawable.whole);
+					else if(v.equals(er))
+						note_l.add(R.drawable.eigthrest);
+					else if(v.equals(qr))
+						note_l.add(R.drawable.quaterrest);
+					else if(v.equals(hr))
+						note_l.add(R.drawable.halfrest);
+					else if(v.equals(wr))
+						note_l.add(R.drawable.wholerest);
+					dialog.dismiss();
+				}
+			};
+			en.setOnClickListener(length_listener);
+			qn.setOnClickListener(length_listener);
+			hn.setOnClickListener(length_listener);
+			wn.setOnClickListener(length_listener);
+			er.setOnClickListener(length_listener);
+			qr.setOnClickListener(length_listener);
+			hr.setOnClickListener(length_listener);
+			wr.setOnClickListener(length_listener);
+			dialog.show();
+			break;
+		}
+	}
+
+	private void calculateNotes()
+	{
+		LinearLayout first_row = (LinearLayout)rows[0].getChildAt(0);
+		notes = new Note[rows.length][first_row.getChildCount()-1];
+		for(int i=0; i<rows.length; i++)
+		{
+			LinearLayout row = (LinearLayout)rows[i].getChildAt(0);
+			for(int j=1; j<row.getChildCount(); j++)
+			{
+				ImageView iv = (ImageView)row.getChildAt(j);
+				if(iv.getBackground()!=null)
+					if(iv.getDrawable().equals(blank))
+					{
+						notes[i][j] = null;
+						continue;
+					}
+					else
+					{
+						double lenght=0;
+						if(iv.getDrawable().equals(eigth))
+							lenght=1/8;
+						else if(iv.getDrawable().equals(quater))
+							lenght=1/4;
+						else if(iv.getDrawable().equals(half))
+							lenght=1/2;
+						else if(iv.getDrawable().equals(whole))
+							lenght=1;
+						if(lenght>0)
+						try
+						{
+							notes[i][j] = new Note(i, lenght);
+							beats++;
+							Log.d("TAG", "added beat");
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+							continue;
+						}
+					}
+			}
+		}
+		printNotes();
+	}
+
+	//adds to end
+	private void add_colum(int num)
+	{
+		for(TableRow i : rows)
+		{
+			LinearLayout row = (LinearLayout)i.getChildAt(0);
+			for(int j=0; j<num; j++)
+				row.addView(makeBlank(row.getChildCount()));
+		}
+	}
+
+	//adds to position
+	private void add_colum(int index, int num, int id)
+	{
+		for(TableRow i : rows)
+		{
+			LinearLayout row = (LinearLayout)i.getChildAt(0);
+			for(int j=0; j<num; j++)
+				row.addView(makeBlank(id), index);
+		}
+	}
+
+	//deletes end
+	private void sub_colum(int num)
+	{
+		for(TableRow i : rows)
+		{
+			LinearLayout row = (LinearLayout)i.getChildAt(0);
+			for(int j=0; j<num; j++)
+				row.removeViewAt(row.getChildCount());//TODO might have to change to minus one
+		}
+	}
+
+	//deletes at position
+	private void sub_colum(int index, int num)
+	{
+		for(TableRow i : rows)
+		{
+			LinearLayout row = (LinearLayout)i.getChildAt(0);
+			for(int j=0; j<num; j++)
+				row.removeViewAt(index);//TODO might have to change to minus one
+		}
+	}
+
+	public ImageView makeBlank(int id)
+	{
+		ImageView blank = new ImageView(this);
+//		blank.setBackgroundColor(colors[r.nextInt(colors.length)]);
+		//TODO use background color to show not length
+		blank.setId(id);
+		blank.setLayoutParams(new LayoutParams(50, 50));
+		blank.setImageResource(R.drawable.blank);
+		blank.setOnClickListener(this);
+		return blank;
+	}
+
+	public void printNotes()
+	{
+		Log.i("TAG", "size= "+notes.length+","+notes[0].length);
+		for(int i=0; i<notes.length; i++)
+		{
+			for(int j=0; j<notes[i].length; j++)
+			{
+				Log.i("TAG", i+","+j+" = null?" + (notes[i][j]==null));
+			}
+		}
+	}
+
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		a.release();
+		//TODO relase all mediaplayers
+	}
+}
